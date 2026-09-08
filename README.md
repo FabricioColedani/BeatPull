@@ -168,11 +168,15 @@ npm install
 - Comprueba si el video o la playlist están disponibles.
 - Revisa la consola interna de la aplicación.
 
-## 📁 Licencia
+## 📜 Licencia
 
-Este proyecto está licenciado bajo Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).
+Este proyecto está distribuido bajo la licencia **Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)**.
 
-Esta licencia permite compartir y adaptar el contenido, siempre que se reconozca la autoría y no se use con fines comerciales. No está permitida la reutilización comercial sin el permiso correspondiente.
+[![CC BY-NC 4.0](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc.svg)](https://creativecommons.org/licenses/by-nc/4.0/deed.es)
+
+* **Permitido:** Uso personal, análisis de código, compilación propia, modificaciones e intercambio no lucrativo.
+* **Atribución Obligatoria:** Cualquier copia o derivado debe incluir el nombre del autor original y el enlace a este repositorio.
+* **Prohibición Comercial:** Prohibida la venta, monetización, distribución empaquetada o cobro por el software sin permiso expreso y por escrito del autor.
 
 ## 👤 Proyecto
 
