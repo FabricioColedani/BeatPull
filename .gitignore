@@ -1,0 +1,43 @@
+# Dependencias de Node
+node_modules/
+
+# Binarios y paquetes compilados (Electron Builder/Forge)
+dist/
+out/
+build/
+release/
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.zip
+
+# Descargas temporales de prueba (evita subir música al repo)
+*.mp3
+*.mp4
+*.m4a
+*.opus
+*.flac
+*.webm
+
+# Variables de entorno y llaves secretas
+.env
+.env.local
+.env.*.local
+
+# Logs del sistema y depuración
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos basura del Sistema Operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuración de IDEs
+.vscode/
+.idea/
+*.swp

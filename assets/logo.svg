@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Fondo Gradiente Zinc -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    
+    <!-- Verde Neón Spotify -->
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1ed760"/>
+      <stop offset="100%" stop-color="#1DB954"/>
+    </linearGradient>
+
+    <!-- Resplandor Neón -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Base redondeada del icono -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="124" fill="none" stroke="#1DB954" stroke-opacity="0.15" stroke-width="8"/>
+
+  <g fill="url(#accentGrad)" filter="url(#glow)">
+    <!-- Barras del ecualizador de audio (Beat) -->
+    <rect x="100" y="216" width="28" height="80" rx="14"/>
+    <rect x="148" y="166" width="28" height="180" rx="14"/>
+    <rect x="336" y="166" width="28" height="180" rx="14"/>
+    <rect x="384" y="216" width="28" height="80" rx="14"/>
+
+    <!-- Flecha de Descarga estilizada (Pull) -->
+    <path d="M256 120 C242.7 120 232 130.7 232 144 V250 L208 226 C198.6 216.6 183.4 216.6 174 226 C164.6 235.4 164.6 250.6 174 260 L239 325 C248.4 334.4 263.6 334.4 273 325 L338 260 C347.4 250.6 347.4 235.4 338 226 C328.6 216.6 313.4 216.6 304 226 L280 250 V144 C280 130.7 269.3 120 256 120 Z"/>
+    
+    <!-- Base receptora -->
+    <rect x="196" y="360" width="120" height="24" rx="12"/>
+  </g>
+</svg>
