@@ -1,44 +1,66 @@
 # BeatPull
 
-BeatPull es una aplicación de escritorio desarrollada con Electron para descargar audio y playlists de YouTube de forma rápida y visual. La app integra `yt-dlp` para gestionar descargas, permite seleccionar una carpeta de destino y ofrece modos básico y avanzado para adaptar la descarga a distintos casos de uso.
+BeatPull es una aplicación de escritorio construida con Electron para descargar audio de YouTube y playlists con una interfaz elegante y fácil de usar. La app usa `yt-dlp` como motor de descarga y ofrece dos modos: básico y avanzado, con personalización de formato, calidad, metadatos y ubicación de guardado.
 
-## Características
+## ✨ Características principales
 
-- Descarga de enlaces individuales y playlists de YouTube.
-- Modo básico con presets de descarga rápida.
-- Modo avanzado para personalizar formato, calidad, metadatos y portadas.
-- Selección de carpeta de destino personalizada.
-- Progreso en tiempo real con logs de consola.
-- Interfaz moderna inspirada en Spotify con estilo oscuro.
-- Compatibilidad con audio en formatos como MP3, M4A, FLAC, WAV, AAC y Opus.
+- Descarga de videos y playlists desde YouTube.
+- Modo básico con presets rápidos para uso general.
+- Modo avanzado con opciones de:
+  - formato de salida (`mp3`, `flac`, `m4a`, `wav`, `opus`, `aac`)
+  - calidad de audio
+  - incrustación de portada
+  - metadatos
+  - rango de playlist
+- Selección personalizada de la carpeta de descarga.
+- Progreso visual y logs en tiempo real.
+- Interfaz oscura estilo Spotify con ventana personalizada de Electron.
+- Comprobación automática de dependencias al iniciar.
 
-## Requisitos
+## 🛠️ Stack tecnológico
 
-Antes de ejecutar el proyecto, asegúrate de tener instalado:
+- Electron
+- JavaScript
+- Tailwind CSS
+- `yt-dlp`
+
+## 📋 Requisitos
+
+Antes de ejecutar la app, asegúrate de tener instalado:
 
 - Node.js 18 o superior
 - npm
-- `yt-dlp` en tu sistema
+- `yt-dlp` disponible en el sistema
 
 ### Instalar `yt-dlp`
 
-En Windows puedes instalarlo con:
+En Windows:
 
 ```bash
 winget install yt-dlp
 ```
 
-También puedes instalarlo con `pip`:
+O con pip:
 
 ```bash
 pip install yt-dlp
 ```
 
-> La aplicación comprueba si `yt-dlp` está disponible al iniciar y muestra un aviso si no lo encuentra.
+> La aplicación comprueba si `yt-dlp` está instalado al iniciar y muestra un aviso si no lo está.
 
-## Instalación
+## 🚀 Instalación
 
-1. Clona este repositorio:
+### Opción 1: Descargar el ejecutable
+
+Si ya tienes el archivo `.exe` compilado, puedes usarlo directamente sin instalar Node.js ni dependencias:
+
+- Descarga la última versión desde la sección de releases o desde la carpeta de distribución del proyecto.
+- Ejecuta `BeatPull.exe`.
+- Si la app te pide instalar `yt-dlp`, sigue la instrucción mostrada en la interfaz.
+
+### Opción 2: Ejecutar desde código fuente
+
+1. Clona el repositorio:
 
 ```bash
 git clone <url-del-repositorio>
@@ -51,37 +73,37 @@ cd BeatPull
 npm install
 ```
 
-3. Inicia la aplicación:
+3. Ejecuta la aplicación:
 
 ```bash
 npm start
 ```
 
-## Scripts disponibles
+## 📜 Scripts disponibles
 
 ```bash
 npm start
 ```
 
-Ejecuta la app en modo Electron.
+Inicia la aplicación Electron.
 
 ```bash
 npm run build-css
 ```
 
-Compila los estilos con Tailwind en modo observación.
+Genera/actualiza los estilos con Tailwind en modo observación.
 
-## Uso
+## ▶️ Cómo usar la app
 
-1. Pega la URL de YouTube o de una playlist en el campo correspondiente.
-2. Selecciona el modo:
-   - Básico: usa presets predefinidos para descargas rápidas.
-   - Avanzado: ajusta formato, calidad, metadatos y rango de playlist.
-3. Elige la carpeta de destino si deseas guardar en otra ubicación.
+1. Pega la URL del video o de la playlist en el campo principal.
+2. Elige el modo:
+   - Básico: usa presets predefinidos.
+   - Avanzado: personaliza formato, calidad, metadatos y rango.
+3. Selecciona una carpeta de destino si deseas cambiar la ubicación predeterminada.
 4. Pulsa "DESCARGAR AHORA".
-5. Puedes seguir el progreso y ver los logs en tiempo real.
+5. Observa el progreso y el log de la descarga en la consola interna.
 
-## Estructura del proyecto
+## 🧩 Estructura del proyecto
 
 ```text
 BeatPull/
@@ -105,44 +127,53 @@ BeatPull/
 
 ### Descripción de carpetas
 
-- `src/main/`: lógica principal de Electron, control de ventanas y gestión de descargas con `yt-dlp`.
-- `src/renderer/`: interfaz gráfica, estilos y lógica del frontend.
-- `assets/`: recursos visuales del proyecto.
+- `src/main/`: ventana principal de Electron, IPC, validación de dependencias y ejecución de `yt-dlp`.
+- `src/renderer/`: interfaz de usuario y comportamiento del frontend.
+- `assets/`: recursos gráficos del proyecto.
 
-## Recomendaciones
+## ⚙️ Comportamiento actual
 
-- Si vas a descargar playlists grandes, usa el modo avanzado para definir un rango o formato específico.
-- Para mejor calidad, usa MP3 con `audio-quality 0` o FLAC/WAV según tus necesidades.
-- Revisa la carpeta de descarga antes de iniciar para evitar mezclas de archivos.
+La app incorpora estas funciones clave:
 
-## Solución de problemas
+- `window-minimize`, `window-maximize` y `window-close` con control de ventana personalizado.
+- `check-dependencies` para validar si `yt-dlp` está instalado.
+- `select-directory` para elegir una carpeta de destino.
+- `start-download` para lanzar el proceso de descarga con argumentos construidos dinámicamente.
+- `download-progress` para mostrar porcentaje real de la descarga.
+- `download-log` para visualizar salida de consola en la interfaz.
+
+## 🧪 Solución de problemas
 
 ### `yt-dlp no encontrado`
 
-La aplicación detecta si el binario no está instalado. Instálalo con `winget install yt-dlp` o `pip install yt-dlp` y vuelve a comprobar.
+Instálalo con:
 
-### No se inicia la aplicación
+```bash
+winget install yt-dlp
+```
 
-Verifica que todas las dependencias estén instaladas:
+Luego vuelve a comprobar desde la aplicación.
+
+### No arranca la app
+
+Verifica que las dependencias estén instaladas:
 
 ```bash
 npm install
 ```
 
-### Error al descargar
+### La descarga falla
 
-- Comprueba que la URL es válida.
-- Verifica que la playlist o el video existan.
-- Revisa la consola de logs dentro de la aplicación.
+- Asegúrate de que la URL sea válida.
+- Comprueba si el video o la playlist están disponibles.
+- Revisa la consola interna de la aplicación.
 
-## Licencia
+## 📁 Licencia
 
-Este proyecto no especifica una licencia en este momento. Si quieres, puedes añadir una licencia como MIT o GPL para definir el uso permitido.
+Este proyecto está licenciado bajo Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).
 
-## Autor
+Esta licencia permite compartir y adaptar el contenido, siempre que se reconozca la autoría y no se use con fines comerciales. No está permitida la reutilización comercial sin el permiso correspondiente.
 
-Proyecto creado para descargar contenido de YouTube de manera práctica y con una interfaz sencilla. 
+## 👤 Proyecto
 
----
-
-Si quieres, puedo dejarte también una versión más profesional del README con badges, capturas, y una sección de "Roadmap" para GitHub.
+BeatPull está pensado como una herramienta práctica para descargar audio desde YouTube con una experiencia visual limpia y rápida.
