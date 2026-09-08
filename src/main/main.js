@@ -2,6 +2,18 @@ const { app, BrowserWindow, ipcMain, dialog, shell, Notification } = require('el
 const path = require('path');
 const { spawn } = require('child_process');
 
+// Define el ID para que la barra de tareas de Windows enlace el icono correctamente
+app.setAppUserModelId('com.beatpull.app');
+
+// Ruta del icono
+const iconPath = path.join(__dirname, '../../assets/logo.png');
+
+function getYtdlpPath() {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'bin', 'yt-dlp.exe')
+    : 'yt-dlp';
+}
+
 let mainWindow;
 
 function createWindow() {
@@ -12,7 +24,7 @@ function createWindow() {
     minHeight: 700,
     frame: false,
     backgroundColor: '#09090b',
-    icon: path.join(__dirname, '../../assets/logo.png'),
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -40,7 +52,7 @@ ipcMain.on('window-close', () => mainWindow?.close());
 // Previsualización de Metadatos
 ipcMain.handle('get-metadata', async (event, url) => {
   return new Promise((resolve) => {
-    const ytdlp = spawn('yt-dlp', ['-j', '--no-warnings', '--flat-playlist', url]);
+    const ytdlp = spawn(getYtdlpPath(), ['-j', '--no-warnings', '--flat-playlist', url]);
     let output = '';
 
     ytdlp.stdout.on('data', (data) => { output += data.toString(); });
@@ -68,7 +80,7 @@ ipcMain.handle('get-metadata', async (event, url) => {
 // Actualizador de yt-dlp
 ipcMain.handle('update-ytdlp', async () => {
   return new Promise((resolve) => {
-    const ytdlp = spawn('yt-dlp', ['-U']);
+    const ytdlp = spawn(getYtdlpPath(), ['-U']);
     let logs = '';
     ytdlp.stdout.on('data', (d) => logs += d.toString());
     ytdlp.stderr.on('data', (d) => logs += d.toString());
@@ -84,14 +96,14 @@ ipcMain.on('show-in-folder', (event, filePath) => {
 // Notificaciones Nativas del SO
 ipcMain.on('send-notification', (event, { title, body }) => {
   if (Notification.isSupported()) {
-    new Notification({ title, body, icon: path.join(__dirname, '../../assets/logo.png') }).show();
+    new Notification({ title, body, icon: iconPath }).show();
   }
 });
 
 // Verificación de dependencias y selección de carpetas
 ipcMain.handle('check-dependencies', () => {
   return new Promise((resolve) => {
-    const ytdlp = spawn('yt-dlp', ['--version']);
+    const ytdlp = spawn(getYtdlpPath(), ['--version']);
     ytdlp.on('close', (code) => resolve(code === 0));
     ytdlp.on('error', () => resolve(false));
   });
@@ -108,7 +120,7 @@ ipcMain.on('start-download', (event, payload) => {
   const argsArray = payload?.argsArray || [];
   const downloadPath = payload?.downloadPath || app.getPath('downloads');
 
-  const ytdlpProcess = spawn('yt-dlp', argsArray, { cwd: downloadPath });
+  const ytdlpProcess = spawn(getYtdlpPath(), argsArray, { cwd: downloadPath });
 
   ytdlpProcess.stdout.on('data', (data) => {
     const logOutput = data.toString();
