@@ -1,3 +1,5 @@
+<img width="1024" height="1024" alt="gemini-svg" src="https://github.com/user-attachments/assets/8f8d3d6f-2fba-4e6f-a4fd-6f8aac41fc8a" />
+
 # BeatPull
 
 BeatPull es una aplicación de escritorio construida con Electron para descargar audio de YouTube y playlists con una interfaz elegante y fácil de usar. La app usa `yt-dlp` como motor de descarga y ofrece dos modos: básico y avanzado, con personalización de formato, calidad, metadatos y ubicación de guardado.
