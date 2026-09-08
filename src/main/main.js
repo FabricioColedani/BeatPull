@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Notification } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -6,12 +6,11 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1050,
-    height: 780,
-    minWidth: 850,
-    minHeight: 650,
-    frame: false, // Quita los bordes nativos feos de Windows
-    transparent: false,
+    width: 1100,
+    height: 850,
+    minWidth: 900,
+    minHeight: 700,
+    frame: false,
     backgroundColor: '#09090b',
     icon: path.join(__dirname, '../../assets/logo.png'),
     webPreferences: {
@@ -24,19 +23,13 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
 }
 
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// Control de Ventana Personalizada
+// Control de Ventana
 ipcMain.on('window-minimize', () => mainWindow?.minimize());
 ipcMain.on('window-maximize', () => {
   if (mainWindow?.isMaximized()) mainWindow.unmaximize();
@@ -44,7 +37,58 @@ ipcMain.on('window-maximize', () => {
 });
 ipcMain.on('window-close', () => mainWindow?.close());
 
-// Comprobar dependencias
+// Previsualización de Metadatos
+ipcMain.handle('get-metadata', async (event, url) => {
+  return new Promise((resolve) => {
+    const ytdlp = spawn('yt-dlp', ['-j', '--no-warnings', '--flat-playlist', url]);
+    let output = '';
+
+    ytdlp.stdout.on('data', (data) => { output += data.toString(); });
+    ytdlp.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const json = JSON.parse(output.split('\n')[0]);
+          const durationSec = json.duration || 0;
+          const mins = Math.floor(durationSec / 60);
+          const secs = Math.floor(durationSec % 60).toString().padStart(2, '0');
+          
+          resolve({
+            title: json.title || 'Título Desconocido',
+            uploader: json.uploader || json.channel || 'Canal Desconocido',
+            thumbnail: json.thumbnail || json.thumbnails?.[0]?.url || '',
+            duration: durationSec ? `${mins}:${secs}` : 'N/A'
+          });
+        } catch { resolve(null); }
+      } else resolve(null);
+    });
+    ytdlp.on('error', () => resolve(null));
+  });
+});
+
+// Actualizador de yt-dlp
+ipcMain.handle('update-ytdlp', async () => {
+  return new Promise((resolve) => {
+    const ytdlp = spawn('yt-dlp', ['-U']);
+    let logs = '';
+    ytdlp.stdout.on('data', (d) => logs += d.toString());
+    ytdlp.stderr.on('data', (d) => logs += d.toString());
+    ytdlp.on('close', (code) => resolve({ success: code === 0, logs }));
+  });
+});
+
+// Abrir en Explorador de Archivos
+ipcMain.on('show-in-folder', (event, filePath) => {
+  if (filePath) shell.showItemInFolder(filePath);
+});
+
+// Notificaciones Nativas del SO
+ipcMain.on('send-notification', (event, { title, body }) => {
+  if (Notification.isSupported()) {
+    new Notification({ title, body, icon: path.join(__dirname, '../../assets/logo.png') }).show();
+  }
+});
+
+// Verificación de dependencias y selección de carpetas
 ipcMain.handle('check-dependencies', () => {
   return new Promise((resolve) => {
     const ytdlp = spawn('yt-dlp', ['--version']);
@@ -53,21 +97,13 @@ ipcMain.handle('check-dependencies', () => {
   });
 });
 
-// Selector de Carpeta
 ipcMain.handle('select-directory', async () => {
   if (!mainWindow) return null;
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory'],
-    title: 'Selecciona la carpeta de descarga'
-  });
-
-  if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
-    return null;
-  }
-  return result.filePaths[0];
+  const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] });
+  return result.canceled ? null : result.filePaths[0];
 });
 
-// Inicio de Descarga
+// Proceso de Descarga
 ipcMain.on('start-download', (event, payload) => {
   const argsArray = payload?.argsArray || [];
   const downloadPath = payload?.downloadPath || app.getPath('downloads');
@@ -78,11 +114,12 @@ ipcMain.on('start-download', (event, payload) => {
     const logOutput = data.toString();
     event.sender.send('download-log', logOutput);
 
-    const progressRegex = /\[download\]\s+(\d+\.\d+)%/;
-    const match = logOutput.match(progressRegex);
+    const match = logOutput.match(/\[download\]\s+(\d+\.\d+)%/);
+    if (match) event.sender.send('download-progress', match[1]);
 
-    if (match) {
-      event.sender.send('download-progress', match[1]);
+    const destinationMatch = logOutput.match(/\[ExtractAudio\] Destination:\s+(.+)/) || logOutput.match(/\[download\] Destination:\s+(.+)/);
+    if (destinationMatch) {
+      event.sender.send('download-filepath', path.join(downloadPath, destinationMatch[1].trim()));
     }
   });
 
@@ -90,10 +127,7 @@ ipcMain.on('start-download', (event, payload) => {
     event.sender.send('download-log', `ERROR: ${data.toString()}`);
   });
 
-  ytdlpProcess.on('close', (code) => {
-    event.sender.send('download-complete', code);
-  });
-
+  ytdlpProcess.on('close', (code) => event.sender.send('download-complete', code));
   ytdlpProcess.on('error', (err) => {
     event.sender.send('download-log', `ERROR DE SISTEMA: ${err.message}`);
     event.sender.send('download-complete', 1);
