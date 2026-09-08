@@ -1,4 +1,5 @@
-<img width="1024" height="1024" alt="gemini-svg" src="https://github.com/user-attachments/assets/8f8d3d6f-2fba-4e6f-a4fd-6f8aac41fc8a" />
+
+<img width="100" height="100" alt="logo" src="https://github.com/user-attachments/assets/1c603c6b-17eb-4c2d-a814-376ad8eb1848" />
 
 # BeatPull
 
